@@ -4,6 +4,10 @@ class FileStorage:
     """
     Handles serialization and deserialization of objects to/from a JSON file.
     """
+    classes = {
+        "BaseModel": BaseModel,
+        "User": User,
+    }
 
     __file_path = "file.json"
     __objects = {}
