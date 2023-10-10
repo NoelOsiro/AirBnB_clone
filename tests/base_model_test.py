@@ -1,7 +1,7 @@
 import unittest
 import pycodestyle
 from models.base_model import BaseModel
-
+from datetime import datetime
 
 class TestBaseModel(unittest.TestCase):
     def test_pep8_conformance(self):
@@ -64,6 +64,22 @@ class TestBaseModel(unittest.TestCase):
         expected_str = "[BaseModel] ({}) {}".format(model.id, model.__dict__)
         self.assertEqual(str(model), expected_str)
 
+    def test_base_model_init_from_dict(self):
+        """
+        Test initializing BaseModel from a dictionary representation.
+        """
+        data = {
+            'id': '12345',
+            'created_at': '2023-10-10T12:00:00.000000',
+            'updated_at': '2023-10-10T12:01:00.000000',
+            'custom_attribute': 'custom_value'
+        }
+        model = BaseModel(**data)
+
+        self.assertEqual(model.id, '12345')
+        self.assertEqual(model.created_at.isoformat(), '2023-10-10T12:00:00')
+        self.assertEqual(model.updated_at.isoformat(), '2023-10-10T12:01:00')
+        self.assertEqual(model.custom_attribute, 'custom_value')
 
 if __name__ == '__main__':
     unittest.main()
