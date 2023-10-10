@@ -11,7 +11,7 @@ class BaseModel:
         Initialize a new instance of BaseModel.
 
         Args:
-            *args: Variable length positional arguments.
+            *args: Variable length positional arguments (not used).
             **kwargs: Variable length keyword arguments. If provided, the instance attributes
                 will be set based on these keyword arguments.
 
@@ -22,9 +22,9 @@ class BaseModel:
         """
         if kwargs:
             for key, value in kwargs.items():
-                if key == "created_at" or key == "updated_at":
+                if key == 'created_at' or key == 'updated_at':
                     setattr(self, key, datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f"))
-                elif key != "__class__":
+                elif key != '__class__':
                     setattr(self, key, value)
         else:
             self.id = str(uuid.uuid4())
