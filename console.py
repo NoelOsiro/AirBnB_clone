@@ -46,7 +46,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
 
     def do_show(self, args):
-        """Prints the string representation of an instance"""
+        """Prints the string representation of an instance based on ID"""
         args_list = shlex.split(args)
         if not args:
             print("** class name missing **")
@@ -65,8 +65,7 @@ class HBNBCommand(cmd.Cmd):
         except NameError:
             print("** class doesn't exist **")
 
-    def do_destroy(self, args):
-        """Deletes an instance based on the class name and id"""
+        """Deletes an instance based on ID"""
         args_list = shlex.split(args)
         if not args:
             print("** class name missing **")
@@ -85,7 +84,7 @@ class HBNBCommand(cmd.Cmd):
                 storage.save()
         except NameError:
             print("** class doesn't exist **")
-
+            
     def do_all(self, args):
         """Prints all string representation of all instances"""
         args_list = shlex.split(args)
@@ -95,15 +94,14 @@ class HBNBCommand(cmd.Cmd):
         else:
             try:
                 cls = eval(args_list[0])
-                obj_list = [str(obj) for obj in storage.all().values()
-                            if type(obj) == cls]
+                obj_list = [str(obj) for obj in cls.all()]
             except NameError:
                 print("** class doesn't exist **")
                 return
         print(obj_list)
 
     def do_update(self, args):
-        """Updates an instance based on the class name and id"""
+        """Updates an instance based on ID and attribute name/value or dictionary"""
         args_list = shlex.split(args)
         if not args:
             print("** class name missing **")
@@ -124,8 +122,54 @@ class HBNBCommand(cmd.Cmd):
             if len(args_list) < 4:
                 print("** value missing **")
                 return
-            setattr(obj, args_list[2], args_list[3].strip('"'))
+            attr_name = args_list[2]
+            attr_value = args_list[3].strip('"')
+            setattr(obj, attr_name, attr_value)
             storage.save()
+        except NameError:
+            print("** class doesn't exist **")
+
+    def do_update_dict(self, args):
+        """Updates an instance based on ID with a dictionary representation"""
+        args_list = shlex.split(args)
+        if not args:
+            print("** class name missing **")
+            return
+        try:
+            cls = eval(args_list[0])
+            if len(args_list) < 2:
+                print("** instance id missing **")
+                return
+            key = "{}.{}".format(args_list[0], args_list[1])
+            obj = storage.all().get(key)
+            if obj is None:
+                print("** no instance found **")
+                return
+            if len(args_list) < 3:
+                print("** dictionary missing **")
+                return
+            try:
+                attr_dict = eval(args_list[2])
+                if not isinstance(attr_dict, dict):
+                    raise ValueError
+                for attr, value in attr_dict.items():
+                    setattr(obj, attr, value)
+                storage.save()
+            except (SyntaxError, ValueError):
+                print("** invalid dictionary **")
+        except NameError:
+            print("** class doesn't exist **")
+
+    def do_count(self, args):
+        """Counts the number of instances of a class"""
+        args_list = shlex.split(args)
+        if not args:
+            print("** class name missing **")
+            return
+        try:
+            cls = eval(args_list[0])
+            count = len(cls.all())
+            print(count)
         except NameError:
             print("** class doesn't exist **")
 
