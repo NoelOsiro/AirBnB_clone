@@ -1,13 +1,15 @@
+
 ![image](https://github.com/NoelOsiro/AirBnB_clone/assets/105745954/14c5a9c3-6470-4ec7-ab5b-8c9c2ba61921)
 
 # 🏡 AirBnB_clone
 
-Welcome to the AirBnB Clone Solution! We've crafted a comprehensive solution to deploy a simplified version of the AirBnB website on your server. This solution covers all the fundamental concepts of higher-level programming.
-![image](https://github.com/NoelOsiro/AirBnB_clone/assets/105745954/9a4ab926-f5b0-4434-97b2-0e802259ffc4)
-![image](https://github.com/NoelOsiro/AirBnB_clone/assets/105745954/aeadd307-32ae-494d-ac86-f692a0d1dfb1)
+
+
+## Documentation
 
 ## Solution Overview
 📅 **Timeline**: From the start until the end of the first year.
+![image](https://github.com/NoelOsiro/AirBnB_clone/assets/105745954/9a4ab926-f5b0-4434-97b2-0e802259ffc4)
 ![image](https://github.com/NoelOsiro/AirBnB_clone/assets/105745954/f163940b-ccf3-4095-b239-1bc16b0f1e45)
 
 Here's what our solution offers:
@@ -104,8 +106,80 @@ In programming, `*args` and `**kwargs` are special constructs used to pass a var
 
 ### **kwargs (Keyword Arguments)
 
-- `**kwargs` enables you to pass a variable number of keyword arguments to a function or method.
-- These arguments are collected into a dictionary, which can be accessed using their respective keys within the function.
-- This is particularly useful when you need to pass a varying set of named parameters to a function.
 
-Understanding and utilizing `*args` and `**kwargs` effectively can enhance the versatility and adaptability of your code, making it more robust and accommodating to different use cases.
+
+
+## Setup and Installation
+
+### Description of the Command Interpreter
+The project includes a command interpreter (Console) that provides the following functionalities:
+- Create a data model.
+- Manage objects through a console/command interpreter.
+- Store and persist objects to a JSON file.
+
+### How to Start It
+To start the AirBnB Clone Solution, follow these steps:
+1. Clone the repository to your local machine.
+2. Navigate to the project's root directory.
+3. Run the `console.py` script.
+
+### How to Use It
+Once the command interpreter is running, you can use it to perform various operations, including creating and managing objects. Here are some basic commands to get you started:
+- `create <class_name>`: Create an instance of the specified class.
+- `show <class_name> <object_id>`: Show details of a specific object.
+- `all <class_name>`: List all objects of a specific class.
+- `update <class_name> <object_id> <attribute_name> "<new_value>"`: Update an attribute of an object.
+
+### Code Examples
+Here are some code examples to demonstrate how to use the command interpreter:
+```bash
+$ ./console.py
+(hbnb) create User
+3fb9d628-6b95-4bdf-91e4-19b2f4341eb9
+(hbnb) show User 3fb9d628-6b95-4bdf-91e4-19b2f4341eb9
+[User] (3fb9d628-6b95-4bdf-91e4-19b2f4341eb9) {'id': '3fb9d628-6b95-4bdf-91e4-19b2f4341eb9', 'created_at': datetime.datetime(2023, 10, 10, 12, 0, 0), 'updated_at': datetime.datetime(2023, 10, 10, 12, 0, 0)}
+(hbnb) all User
+["[User] (3fb9d628-6b95-4bdf-91e4-19b2f4341eb9) {'id': '3fb9d628-6b95-4bdf-91e4-19b2f4341eb9', 'created_at': datetime.datetime(2023, 10, 10, 12, 0, 0), 'updated_at': datetime.datetime(2023, 10, 10, 12, 0, 0)}"]
+(hbnb) update User 3fb9d628-6b95-4bdf-91e4-19b2f4341eb9 first_name "John"
+(hbnb) show User 3fb9d628-6b95-4bdf-91e4-19b2f4341eb9
+[User] (3fb9d628-6b95-4bdf-91e4-19b2f4341eb9) {'id': '3fb9d628-6b95-4bdf-91e4-19b2f4341eb9', 'created_at': datetime.datetime(2023, 10, 10, 12, 0, 0), 'updated_at': datetime.datetime(2023, 10, 10, 12, 1, 0), 'first_name': 'John'}
+```
+
+### Authors
+Please refer to the `AUTHORS` file at the root of the repository to see a list of all individuals who have contributed content to the project. The format of this file should follow the Docker [AUTHORS page](https://github.com/NoelOsiro/AirBnB_clone/blob/main/AUTHORS).
+
+### Using Branches and Pull Requests
+We encourage the use of branches and pull requests on GitHub to help organize and coordinate work within the team. This approach ensures that contributions are reviewed and integrated effectively.
+
+### Solution Overview
+![Solution Overview](https://github.com/NoelOsiro/AirBnB_clone/assets/105745954/f163940b-ccf3-4095-b239-1bc16b0f1e45)
+
+The AirBnB Clone Solution offers a comprehensive set of features, including a command interpreter, storage engine, web static, MySQL storage, web framework templating, RESTful API, and web dynamic functionalities. Each aspect of the solution is designed to help you learn and implement key concepts in programming and web development.
+## Running Tests
+
+To run tests, run the following command
+
+```bash
+  npm run test
+```
+
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+## Roadmap
+
+- Additional browser support
+- Add more integrations
+- Add SNS, SES functionality
+
+## Authors
+
+For any inquiries or questions, please reach out to:
+
+Noel Osiro
+- Email: [noelosiroski@gmail.com](mailto:noelosiroski@gmail.com) ![Gmail](https://img.shields.io/badge/Gmail-D14836?logo=gmail&logoColor=white&style=flat-square)
+- Twitter: [@Osiroski](https://twitter.com/NoelOsiro) ![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?logo=twitter&logoColor=white&style=flat-square)
+- LinkedIn: [Noel Osiro](https://www.linkedin.com/in/noelosiroski/) ![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?logo=linkedin&logoColor=white&style=flat-square)
+
+Feel free to contact me for any feedback, collaboration opportunities, or if you have any questions related to the Dental Clinic Management System project or technology stack. I'm always eager to connect and learn from the community! 🌟📧🐦
