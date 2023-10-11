@@ -3,6 +3,7 @@ from models.base_model import BaseModel
 from models import storage
 from datetime import datetime
 
+
 class TestBaseModel(unittest.TestCase):
 
     def test_new_instance(self):
@@ -50,8 +51,14 @@ class TestBaseModel(unittest.TestCase):
         model = BaseModel()
         model_dict = model.to_dict()
         self.assertEqual(model_dict['__class__'], 'BaseModel')
-        self.assertEqual(model_dict['created_at'], model.created_at.isoformat())
-        self.assertEqual(model_dict['updated_at'], model.updated_at.isoformat())
+        self.assertEqual(
+            model_dict['created_at'],
+            model.created_at.isoformat()
+            )
+        self.assertEqual(
+            model_dict['updated_at'],
+            model.updated_at.isoformat()
+            )
 
     def test_str_method(self):
         """
@@ -70,6 +77,7 @@ class TestBaseModel(unittest.TestCase):
         key = "{}.{}".format(model.__class__.__name__, model.id)
         self.assertIn(key, all_objs)
         self.assertEqual(all_objs[key], model)
+
 
 if __name__ == '__main__':
     unittest.main()

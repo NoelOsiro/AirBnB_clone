@@ -36,7 +36,10 @@ class TestConsole(unittest.TestCase):
         output = self.capture_stdout("help")
         print(output)
         self.assertIn("Documented commands (type help <topic>):", output)
-        self.assertIn("EOF  help  quit  create  show  destroy  all  update", output)
+        self.assertIn(
+            "EOF  help  quit  create  show  destroy  all  update",
+            output
+            )
 
     def test_help_quit(self):
         output = self.capture_stdout("help quit")
@@ -48,7 +51,10 @@ class TestConsole(unittest.TestCase):
 
     def test_help_show(self):
         output = self.capture_stdout("help show")
-        self.assertEqual(output, "Prints the string representation of an instance based on ID")
+        self.assertEqual(
+            output,
+            "Prints the string representation of an instance based on ID"
+            )
 
     def test_help_destroy(self):
         output = self.capture_stdout("help destroy")
@@ -56,11 +62,17 @@ class TestConsole(unittest.TestCase):
 
     def test_help_all(self):
         output = self.capture_stdout("help all")
-        self.assertEqual(output, "Prints all string representation of all instances")
+        self.assertEqual(
+            output,
+            "Prints all string representation of all instances"
+            )
 
     def test_help_update(self):
         output = self.capture_stdout("help update")
-        self.assertEqual(output, "Updates an instance based on ID and attribute name/value or dictionary")
+        self.assertEqual(
+            output,
+            "Updates an instance based on ID and attribute name/value or dict"
+            )
 
     def test_help_count(self):
         output = self.capture_stdout("help count")
@@ -79,7 +91,11 @@ class TestConsole(unittest.TestCase):
     def test_create_command(self):
         output = self.capture_stdout("create BaseModel")
         self.assertTrue(len(output) == 36)
-        self.assertTrue(isinstance(storage.all()["BaseModel." + output], BaseModel))
+        self.assertTrue(
+            isinstance(
+                storage.all()["BaseModel." + output],
+                BaseModel)
+            )
 
     def test_create_command_missing_class(self):
         output = self.capture_stdout("create")
@@ -149,7 +165,9 @@ class TestConsole(unittest.TestCase):
     def test_update_command(self):
         bm = BaseModel()
         bm_id = bm.id
-        output = self.capture_stdout(f"update BaseModel {bm_id} name 'New Name'")
+        output = self.capture_stdout(
+            f"update BaseModel {bm_id} name 'New Name'"
+            )
         self.assertEqual(bm.name, 'New Name')
 
     def test_update_command_missing_class(self):
@@ -183,7 +201,9 @@ class TestConsole(unittest.TestCase):
     def test_update_dict_command(self):
         bm = BaseModel()
         bm_id = bm.id
-        output = self.capture_stdout(f"update_dict BaseModel {bm_id} {{'name': 'Updated Name'}}")
+        output = self.capture_stdout(
+            f"update_dict BaseModel {bm_id} {{'name': 'Updated Name'}}"
+            )
         self.assertEqual(bm.name, 'Updated Name')
 
     def test_update_dict_command_missing_class(self):
@@ -205,13 +225,17 @@ class TestConsole(unittest.TestCase):
     def test_update_dict_command_missing_dict(self):
         bm = BaseModel()
         bm_id = bm.id
-        output = self.capture_stdout(f"update_dict BaseModel {bm_id}")
+        output = self.capture_stdout(
+            f"update_dict BaseModel {bm_id}"
+            )
         self.assertEqual(output, "** dictionary missing **")
 
     def test_update_dict_command_invalid_dict(self):
         bm = BaseModel()
         bm_id = bm.id
-        output = self.capture_stdout(f"update_dict BaseModel {bm_id} 'invalid_dict'")
+        output = self.capture_stdout(
+            f"update_dict BaseModel {bm_id} 'invalid_dict'"
+            )
         self.assertEqual(output, "** invalid dictionary **")
 
     def test_count_command(self):
@@ -245,7 +269,10 @@ class TestConsole(unittest.TestCase):
     def test_create_amenity_command(self):
         output = self.capture_stdout("create Amenity")
         self.assertTrue(len(output) == 36)
-        self.assertTrue(isinstance(storage.all()["Amenity." + output], Amenity))
+        self.assertTrue(
+            isinstance(
+                storage.all()["Amenity." + output],
+                Amenity))
 
     def test_create_place_command(self):
         output = self.capture_stdout("create Place")
