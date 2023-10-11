@@ -1,5 +1,6 @@
 import json
 
+
 class FileStorage:
     """
     Handles serialization and deserialization of objects to/from a JSON file.
@@ -30,7 +31,7 @@ class FileStorage:
             "Place": Place,
             "Review": Review
         }
-        
+
     def all(self):
         """
         Returns the dictionary of objects (__objects).

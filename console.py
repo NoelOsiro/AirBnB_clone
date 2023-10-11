@@ -19,7 +19,7 @@ class HBNBCommand(cmd.Cmd):
     """
     HBNBCommand class for the command interpreter.
     """
-    
+
     prompt = "(hbnb) "
 
     def emptyline(self):
@@ -84,7 +84,7 @@ class HBNBCommand(cmd.Cmd):
                 storage.save()
         except NameError:
             print("** class doesn't exist **")
-            
+
     def do_all(self, args):
         """Prints all string representation of all instances"""
         args_list = shlex.split(args)
@@ -101,7 +101,7 @@ class HBNBCommand(cmd.Cmd):
         print(obj_list)
 
     def do_update(self, args):
-        """Updates an instance based on ID and attribute name/value or dictionary"""
+        """Updates an instance based on ID and attribute name/value or dict"""
         args_list = shlex.split(args)
         if not args:
             print("** class name missing **")

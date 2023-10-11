@@ -34,6 +34,7 @@ class TestConsole(unittest.TestCase):
 
     def test_help(self):
         output = self.capture_stdout("help")
+        print(output)
         self.assertIn("Documented commands (type help <topic>):", output)
         self.assertIn("EOF  help  quit  create  show  destroy  all  update", output)
 

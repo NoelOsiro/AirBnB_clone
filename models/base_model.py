@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime
 from models import storage
 
+
 class BaseModel:
     """
     Base class for all models.
@@ -13,18 +14,22 @@ class BaseModel:
 
         Args:
             *args: Variable length positional arguments (not used).
-            **kwargs: Variable length keyword arguments. If provided, the instance attributes
-                will be set based on these keyword arguments.
+            **kwargs: Variable length keyword arguments.
+            If provided, the instance attributes
+            will be set based on these keyword arguments.
 
         Attributes:
             id (str): Unique identifier for the instance.
-            created_at (datetime): Date and time when the instance was created.
-            updated_at (datetime): Date and time when the instance was last updated.
+            created_at (datetime): Date and time the instance was created.
+            updated_at (datetime): Date and time the instance was last updated.
         """
         if kwargs:
             for key, value in kwargs.items():
                 if key == 'created_at' or key == 'updated_at':
-                    setattr(self, key, datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f"))
+                    setattr(
+                        self,
+                        key,
+                        datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f"))
                 elif key != '__class__':
                     setattr(self, key, value)
         else:
@@ -34,7 +39,8 @@ class BaseModel:
 
     def save(self):
         """
-        Update the 'updated_at' attribute with the current datetime and save the instance to storage.
+        Update the 'updated_at' attribute with the
+        current datetime and save the instance to storage.
         """
         self.updated_at = datetime.now()
         storage.save()
@@ -44,7 +50,8 @@ class BaseModel:
         Return a dictionary representation of the instance.
 
         Returns:
-            dict: A dictionary containing all instance attributes and their values.
+            dict: A dictionary containing all instance
+            attributes and their values.
         """
         instance_dict = self.__dict__.copy()
         instance_dict["__class__"] = self.__class__.__name__
@@ -57,6 +64,9 @@ class BaseModel:
         Return a string representation of the instance.
 
         Returns:
-            str: A string in the format '[<class name>] (<self.id>) <self.__dict__>'.
+            str: A string in the format
+            '[<class name>] (<self.id>) <self.__dict__>'.
         """
-        return "[{}] ({}) {}".format(self.__class__.__name__, self.id, self.__dict__)
+        return "[{}] ({}) {}".format(
+            self.__class__.__name__,
+            self.id, self.__dict__)
