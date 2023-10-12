@@ -32,10 +32,19 @@ class FileStorage:
             "Review": Review
         }
 
-    def all(self):
+    def all(self, cls=None):
         """
-        Returns the dictionary of objects (__objects).
+        Return a dictionary of objects.
         """
+        if cls is not None:
+            if type(cls) == str:
+                cls = models.classes.get(cls, None)
+            if cls is not None:
+                return {
+                    key: obj
+                    for key, obj in self.__objects.items()
+                    if isinstance(obj, cls)
+                }
         return self.__objects
 
     def new(self, obj):

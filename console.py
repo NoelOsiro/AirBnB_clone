@@ -65,6 +65,7 @@ class HBNBCommand(cmd.Cmd):
         except NameError:
             print("** class doesn't exist **")
 
+    def do_destroy(self, args):
         """Deletes an instance based on ID"""
         args_list = shlex.split(args)
         if not args:
@@ -167,12 +168,11 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         try:
-            cls = eval(args_list[0])
-            count = len(cls.all())
+            cls = args_list[0]
+            count = len(storage.all(cls))
             print(count)
         except NameError:
             print("** class doesn't exist **")
-
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
