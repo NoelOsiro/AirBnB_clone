@@ -1,5 +1,6 @@
 import unittest
 import os
+import uuid
 from io import StringIO
 from unittest.mock import patch
 from console import HBNBCommand
@@ -157,6 +158,53 @@ class TestCreateCommand(unittest.TestCase):
         instance_id = output
         created_instance = storage.all().get(f"BaseModel.{instance_id}")
         self.assertTrue(str(created_instance).startswith("[BaseModel]"))
+
+class TestShowCommand(unittest.TestCase):
+    def setUp(self):
+        self.console = HBNBCommand()
+
+    def tearDown(self):
+        self.console = None
+
+    @classmethod
+    def tearDownClass(cls):
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
+    def capture_stdout(self, command):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd(command)
+            return mock_stdout.getvalue().strip()
+
+    def test_show_with_valid_class_and_id(self):
+        self.capture_stdout("create BaseModel")
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        self.assertNotEqual(output, "** class doesn't exist **")
+        self.assertNotEqual(output, "** instance id missing **")
+        show_output = self.capture_stdout(f"show BaseModel {instance_id}")
+        self.assertNotIn("** no instance found **", show_output)
+
+    def test_show_with_nonexistent_class(self):
+        output = self.capture_stdout("show NonExistentClass 12345")
+        self.assertEqual(output, "** class doesn't exist **")
+
+    def test_show_without_class_name(self):
+        output = self.capture_stdout("show")
+        self.assertEqual(output, "** class name missing **")
+
+    def test_show_with_valid_class_and_nonexistent_id(self):
+        self.capture_stdout("create BaseModel")
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        self.assertNotEqual(output, "** class doesn't exist **")
+        self.assertNotEqual(output, "** instance id missing **")
+        unique_non_existent_id = str(uuid.uuid4())
+        show_output = self.capture_stdout(f"show BaseModel {unique_non_existent_id}")
+        self.assertEqual(show_output, "** no instance found **")
+
 
 if __name__ == '__main__':
     unittest.main()

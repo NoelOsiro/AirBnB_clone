@@ -8,6 +8,8 @@ class BaseModel:
     Base class for all models.
     """
 
+    instances = {}
+    
     def __init__(self, *args, **kwargs):
         """
         Initialize a new instance of BaseModel.
@@ -36,6 +38,10 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = self.updated_at = datetime.now()
             storage.new(self)
+
+    @classmethod
+    def all(cls):
+        return list(cls.instances.values())
 
     def save(self):
         """
