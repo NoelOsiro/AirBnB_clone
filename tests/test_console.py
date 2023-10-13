@@ -205,6 +205,57 @@ class TestShowCommand(unittest.TestCase):
         show_output = self.capture_stdout(f"show BaseModel {unique_non_existent_id}")
         self.assertEqual(show_output, "** no instance found **")
 
+    def test_show_with_valid_class_and_existing_instance(self):
+        # Create an instance to be shown
+        self.capture_stdout("create BaseModel")
+        # Capture the ID of the created instance
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        self.assertNotEqual(output, "** class doesn't exist **")
+        self.assertNotEqual(output, "** instance id missing **")
+        # Ensure that a new instance of BaseModel is created
+
+        # Use the show command to display the existing instance
+        show_output = self.capture_stdout(f"show BaseModel {instance_id}")
+        self.assertNotEqual(show_output, "** no instance found **")
+        # Ensure that the existing instance is displayed
+
+    def test_show_without_instance_id(self):
+        # Create an instance to be shown
+        self.capture_stdout("create BaseModel")
+        # Capture the ID of the created instance
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        self.assertNotEqual(output, "** class doesn't exist **")
+        self.assertNotEqual(output, "** instance id missing **")
+        # Ensure that a new instance of BaseModel is created
+
+        # Use the show command without specifying an instance ID
+        show_output = self.capture_stdout("show BaseModel")
+        self.assertEqual(show_output, "** instance id missing **")
+        # Ensure that it reports that the instance ID is missing
+
+    def test_show_with_invalid_class(self):
+        output = self.capture_stdout("show InvalidClass 12345")
+        self.assertEqual(output, "** class doesn't exist **")
+        # Ensure that it fails when the class doesn't exist
+
+    def test_show_with_valid_class_and_nonexistent_instance(self):
+        # Create an instance to be shown
+        self.capture_stdout("create BaseModel")
+        # Capture the ID of the created instance
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        self.assertNotEqual(output, "** class doesn't exist **")
+        self.assertNotEqual(output, "** instance id missing **")
+        # Ensure that a new instance of BaseModel is created
+
+        # Use the show command to display a nonexistent instance
+        non_existent_id = str(uuid.uuid4())  # Generate a unique ID
+        show_output = self.capture_stdout(f"show BaseModel {non_existent_id}")
+        self.assertEqual(show_output, "** no instance found **")
+        # Ensure that it reports that no instance was found
+
 
 if __name__ == '__main__':
     unittest.main()
