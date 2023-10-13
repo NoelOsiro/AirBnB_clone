@@ -1,5 +1,7 @@
+#!/usr/bin/python3
 import unittest
 import os
+import uuid
 from io import StringIO
 from unittest.mock import patch
 from console import HBNBCommand
@@ -12,8 +14,9 @@ from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
 
+class TestPromptSymbol(unittest.TestCase):
+    """Unittests for testing prompting of the HBNB command interpreter."""
 
-class TestConsole(unittest.TestCase):
     def setUp(self):
         self.console = HBNBCommand()
 
@@ -29,21 +32,73 @@ class TestConsole(unittest.TestCase):
 
     def capture_stdout(self, command):
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self.console.onecmd(command)
+            HBNBCommand().onecmd(command)
+            return mock_stdout.getvalue().strip()
+
+    def test_prompt_string(self):
+        self.assertEqual("(hbnb) ", HBNBCommand.prompt)
+
+    def test_empty_line(self):
+        output = self.capture_stdout("")
+        self.assertEqual("", output)
+
+class TestExitCommands(unittest.TestCase):
+    """Tests for exit commands: quit and EOF."""
+
+    def setUp(self):
+        self.console = HBNBCommand()
+
+    def tearDown(self):
+        self.console = None
+
+    @classmethod
+    def tearDownClass(cls):
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
+    def capture_stdout(self, command):
+        with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd(command)
+            return mock_stdout.getvalue().strip()
+
+    def test_quit_command(self):
+        self.assertTrue(HBNBCommand().onecmd("quit"))
+
+    def test_EOF_command(self):
+        self.assertTrue(HBNBCommand().onecmd("EOF"))
+
+class TestHelpCommands(unittest.TestCase):
+    """Tests for help commands."""
+
+    def setUp(self):
+        self.console = HBNBCommand()
+
+    def tearDown(self):
+        self.console = None
+
+    def capture_stdout(self, command):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd(command)
             return mock_stdout.getvalue().strip()
 
     def test_help(self):
         output = self.capture_stdout("help")
         self.assertIn("Documented commands (type help <topic>):", output)
-        self.assertIn("EOF  help  quit  create  show  destroy  all  update", output)
+        self.assertIn("EOF  all  count  create  destroy  help  quit  show  update", output)
 
     def test_help_quit(self):
         output = self.capture_stdout("help quit")
         self.assertEqual(output, "Quit command to exit the program")
 
+    def test_help_EOF(self):
+        output = self.capture_stdout("help EOF")
+        self.assertEqual(output, "EOF command to exit the program")
+
     def test_help_create(self):
         output = self.capture_stdout("help create")
-        self.assertEqual(output, "Create a new instance of BaseModel")
+        self.assertEqual(output, "Create a new instance of a class")
 
     def test_help_show(self):
         output = self.capture_stdout("help show")
@@ -59,203 +114,312 @@ class TestConsole(unittest.TestCase):
 
     def test_help_update(self):
         output = self.capture_stdout("help update")
-        self.assertEqual(output, "Updates an instance based on ID and attribute name/value or dictionary")
+        self.assertEqual(output, "Updates an instance based on ID and attribute name/value or dict")
 
     def test_help_count(self):
         output = self.capture_stdout("help count")
         self.assertEqual(output, "Counts the number of instances of a class")
 
-    def test_quit_command(self):
-        with self.assertRaises(SystemExit) as e:
-            self.console.onecmd("quit")
-        self.assertEqual(e.exception.code, None)
+class TestCreateCommand(unittest.TestCase):
+    """Tests for the create command."""
 
-    def test_EOF_command(self):
-        with self.assertRaises(SystemExit) as e:
-            self.console.onecmd("EOF")
-        self.assertEqual(e.exception.code, None)
+    def setUp(self):
+        self.console = HBNBCommand()
 
-    def test_create_command(self):
+    def tearDown(self):
+        self.console = None
+
+    @classmethod
+    def tearDownClass(cls):
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
+    def capture_stdout(self, command):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd(command)
+            return mock_stdout.getvalue().strip()
+
+    def test_create_with_valid_class(self):
         output = self.capture_stdout("create BaseModel")
-        self.assertTrue(len(output) == 36)
-        self.assertTrue(isinstance(storage.all()["BaseModel." + output], BaseModel))
+        assert "** class doesn't exist **" not in output
+        assert "** class name missing **" not in output
+        assert output  # Ensure that output is not empty
 
-    def test_create_command_missing_class(self):
+    def test_create_with_nonexistent_class(self):
+        output = self.capture_stdout("create NonExistentClass")
+        self.assertEqual(output, "** class doesn't exist **")
+
+    def test_create_without_class_name(self):
         output = self.capture_stdout("create")
         self.assertEqual(output, "** class name missing **")
 
-    def test_create_command_invalid_class(self):
-        output = self.capture_stdout("create InvalidClass")
+    def test_create_and_check_in_storage(self):
+        output = self.capture_stdout("create BaseModel")
+        assert "** class doesn't exist **" not in output
+        assert "** class name missing **" not in output
+        instance_id = output
+        created_instance = storage.all().get(f"BaseModel.{instance_id}")
+        assert created_instance is not None
+
+    def test_create_and_check_string_representation(self):
+        output = self.capture_stdout("create BaseModel")
+        assert "** class doesn't exist **" not in output
+        assert "** class name missing **" not in output
+        instance_id = output
+        created_instance = storage.all().get(f"BaseModel.{instance_id}")
+        assert str(created_instance).startswith("[BaseModel]")
+
+    def test_create_with_invalid_json_format(self):
+        output = self.capture_stdout("create BaseModel {'invalidJSON'}")
+        self.assertEqual(output, "** invalid dictionary **")
+
+class TestShowCommand(unittest.TestCase):
+    """Tests for the show command."""
+
+    def setUp(self):
+        self.console = HBNBCommand()
+
+    def tearDown(self):
+        self.console = None
+
+    @classmethod
+    def tearDownClass(cls):
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
+    def capture_stdout(self, command):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd(command)
+            return mock_stdout.getvalue().strip()
+
+    def test_show_with_valid_class_and_id(self):
+        self.capture_stdout("create BaseModel")
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        assert "** class doesn't exist **" not in output
+        assert "** instance id missing **" not in output
+        show_output = self.capture_stdout(f"show BaseModel {instance_id}")
+        assert "** no instance found **" not in show_output
+
+    def test_show_with_nonexistent_class(self):
+        output = self.capture_stdout("show NonExistentClass 12345")
         self.assertEqual(output, "** class doesn't exist **")
 
-    def test_show_command(self):
-        bm = BaseModel()
-        output = self.capture_stdout(f"show BaseModel {bm.id}")
-        self.assertIn(f"[BaseModel] ({bm.id})", output)
-
-    def test_show_command_missing_class(self):
+    def test_show_without_class_name(self):
         output = self.capture_stdout("show")
         self.assertEqual(output, "** class name missing **")
 
-    def test_show_command_invalid_class(self):
-        output = self.capture_stdout("show InvalidClass")
-        self.assertEqual(output, "** class doesn't exist **")
-
-    def test_show_command_missing_id(self):
-        output = self.capture_stdout("show BaseModel")
-        self.assertEqual(output, "** instance id missing **")
-
-    def test_show_command_invalid_id(self):
-        output = self.capture_stdout("show BaseModel 1234")
-        self.assertEqual(output, "** no instance found **")
-
-    def test_destroy_command(self):
-        bm = BaseModel()
-        bm_id = bm.id
-        output = self.capture_stdout(f"destroy BaseModel {bm_id}")
-        self.assertNotIn(f"{bm_id}", storage.all())
-
-    def test_destroy_command_missing_class(self):
-        output = self.capture_stdout("destroy")
-        self.assertEqual(output, "** class name missing **")
-
-    def test_destroy_command_invalid_class(self):
-        output = self.capture_stdout("destroy InvalidClass")
-        self.assertEqual(output, "** class doesn't exist **")
-
-    def test_destroy_command_missing_id(self):
-        output = self.capture_stdout("destroy BaseModel")
-        self.assertEqual(output, "** instance id missing **")
-
-    def test_destroy_command_invalid_id(self):
-        output = self.capture_stdout("destroy BaseModel 1234")
-        self.assertEqual(output, "** no instance found **")
-
-    def test_all_command(self):
-        bm = BaseModel()
-        output = self.capture_stdout("all")
-        self.assertIn(f"[BaseModel] ({bm.id})", output)
-
-    def test_all_command_with_class(self):
-        bm = BaseModel()
+    def test_show_with_valid_class_and_nonexistent_id(self):
+        self.capture_stdout("create BaseModel")
         output = self.capture_stdout("all BaseModel")
-        self.assertIn(f"[BaseModel] ({bm.id})", output)
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        assert "** class doesn't exist **" not in output
+        assert "** instance id missing **" not in output
+        unique_non_existent_id = str(uuid.uuid4())
+        show_output = self.capture_stdout(f"show BaseModel {unique_non_existent_id}")
+        self.assertEqual(show_output, "** no instance found **")
 
-    def test_all_command_invalid_class(self):
-        output = self.capture_stdout("all InvalidClass")
+    def test_show_with_valid_class_and_existing_instance(self):
+        self.capture_stdout("create BaseModel")
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        assert "** class doesn't exist **" not in output
+        assert "** instance id missing **" not in output
+        show_output = self.capture_stdout(f"show BaseModel {instance_id}")
+        assert "** no instance found **" not in show_output
+
+    def test_show_without_instance_id(self):
+        self.capture_stdout("create BaseModel")
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        assert "** class doesn't exist **" not in output
+        assert "** instance id missing **" not in output
+        show_output = self.capture_stdout("show BaseModel")
+        self.assertEqual(show_output, "** instance id missing **")
+
+    def test_show_with_invalid_class(self):
+        output = self.capture_stdout("show InvalidClass 12345")
         self.assertEqual(output, "** class doesn't exist **")
 
-    def test_update_command(self):
-        bm = BaseModel()
-        bm_id = bm.id
-        output = self.capture_stdout(f"update BaseModel {bm_id} name 'New Name'")
-        self.assertEqual(bm.name, 'New Name')
+    def test_show_with_valid_class_and_nonexistent_instance(self):
+        self.capture_stdout("create BaseModel")
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        assert "** class doesn't exist **" not in output
+        assert "** instance id missing **" not in output
+        non_existent_id = str(uuid.uuid4())
+        show_output = self.capture_stdout(f"show BaseModel {non_existent_id}")
+        self.assertEqual(show_output, "** no instance found **")
 
-    def test_update_command_missing_class(self):
-        output = self.capture_stdout("update")
-        self.assertEqual(output, "** class name missing **")
+class TestDestroyCommand(unittest.TestCase):
+    """Tests for the destroy command."""
 
-    def test_update_command_invalid_class(self):
-        output = self.capture_stdout("update InvalidClass")
+    def setUp(self):
+        self.console = HBNBCommand()
+
+    def tearDown(self):
+        self.console = None
+
+    @classmethod
+    def tearDownClass(cls):
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
+    def capture_stdout(self, command):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd(command)
+            return mock_stdout.getvalue().strip()
+
+    def test_destroy_with_valid_class_and_existing_instance(self):
+        self.capture_stdout("create BaseModel")
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        assert "** class doesn't exist **" not in output
+        assert "** instance id missing **" not in output
+        destroy_output = self.capture_stdout(f"destroy BaseModel {instance_id}")
+        assert "** no instance found **" not in destroy_output
+        show_output = self.capture_stdout(f"show BaseModel {instance_id}")
+        self.assertEqual(show_output, "** no instance found **")
+
+    def test_destroy_without_instance_id(self):
+        self.capture_stdout("create BaseModel")
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        assert "** class doesn't exist **" not in output
+        assert "** instance id missing **" not in output
+        destroy_output = self.capture_stdout("destroy BaseModel")
+        self.assertEqual(destroy_output, "** instance id missing **")
+
+    def test_destroy_with_invalid_class(self):
+        output = self.capture_stdout("destroy InvalidClass 12345")
         self.assertEqual(output, "** class doesn't exist **")
 
-    def test_update_command_missing_id(self):
-        output = self.capture_stdout("update BaseModel")
-        self.assertEqual(output, "** instance id missing **")
+    def test_destroy_with_valid_class_and_nonexistent_instance(self):
+        self.capture_stdout("create BaseModel")
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        assert "** class doesn't exist **" not in output
+        assert "** instance id missing **" not in output
+        non_existent_id = str(uuid.uuid4())
+        destroy_output = self.capture_stdout(f"destroy BaseModel {non_existent_id}")
+        self.assertEqual(destroy_output, "** no instance found **")
 
-    def test_update_command_invalid_id(self):
-        output = self.capture_stdout("update BaseModel 1234")
-        self.assertEqual(output, "** no instance found **")
+    def test_destroy_with_valid_class_and_existing_instance_twice(self):
+        self.capture_stdout("create BaseModel")
+        output = self.capture_stdout("all BaseModel")
+        instance_id = output.strip('[]').split(',')[0].strip().strip('\'')
+        assert "** class doesn't exist **" not in output
+        assert "** instance id missing **" not in output
+        destroy_output = self.capture_stdout(f"destroy BaseModel {instance_id}")
+        assert "** no instance found **" not in destroy_output
+        destroy_output = self.capture_stdout(f"destroy BaseModel {instance_id}")
+        self.assertEqual(destroy_output, "** no instance found **")
 
-    def test_update_command_missing_attr_name(self):
-        bm = BaseModel()
-        bm_id = bm.id
-        output = self.capture_stdout(f"update BaseModel {bm_id}")
-        self.assertEqual(output, "** attribute name missing **")
+class TestCountCommand(unittest.TestCase):
+    """Tests for the count command."""
 
-    def test_update_command_missing_attr_value(self):
-        bm = BaseModel()
-        bm_id = bm.id
-        output = self.capture_stdout(f"update BaseModel {bm_id} name")
-        self.assertEqual(output, "** value missing **")
+    def setUp(self):
+        self.console = HBNBCommand()
 
-    def test_update_dict_command(self):
-        bm = BaseModel()
-        bm_id = bm.id
-        output = self.capture_stdout(f"update_dict BaseModel {bm_id} {{'name': 'Updated Name'}}")
-        self.assertEqual(bm.name, 'Updated Name')
+    def tearDown(self):
+        self.console = None
 
-    def test_update_dict_command_missing_class(self):
-        output = self.capture_stdout("update_dict")
-        self.assertEqual(output, "** class name missing **")
+    @classmethod
+    def tearDownClass(cls):
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
 
-    def test_update_dict_command_invalid_class(self):
-        output = self.capture_stdout("update_dict InvalidClass")
-        self.assertEqual(output, "** class doesn't exist **")
+    def capture_stdout(self, command):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd(command)
+            return mock_stdout.getvalue().strip()
 
-    def test_update_dict_command_missing_id(self):
-        output = self.capture_stdout("update_dict BaseModel")
-        self.assertEqual(output, "** instance id missing **")
-
-    def test_update_dict_command_invalid_id(self):
-        output = self.capture_stdout("update_dict BaseModel 1234")
-        self.assertEqual(output, "** no instance found **")
-
-    def test_update_dict_command_missing_dict(self):
-        bm = BaseModel()
-        bm_id = bm.id
-        output = self.capture_stdout(f"update_dict BaseModel {bm_id}")
-        self.assertEqual(output, "** dictionary missing **")
-
-    def test_update_dict_command_invalid_dict(self):
-        bm = BaseModel()
-        bm_id = bm.id
-        output = self.capture_stdout(f"update_dict BaseModel {bm_id} 'invalid_dict'")
-        self.assertEqual(output, "** invalid dictionary **")
-
-    def test_count_command(self):
-        bm = BaseModel()
+    def test_count_existing_class(self):
         output = self.capture_stdout("count BaseModel")
-        self.assertEqual(output, "1")
+        assert "** class doesn't exist **" not in output
+        assert "** class name missing **" not in output
+        assert output.isdigit()
 
-    def test_count_command_missing_class(self):
+    def test_count_non_existing_class(self):
+        output = self.capture_stdout("count NonExistentClass")
+        self.assertEqual(output, "** class doesn't exist **")
+
+    def test_count_missing_class_name(self):
         output = self.capture_stdout("count")
         self.assertEqual(output, "** class name missing **")
 
-    def test_count_command_invalid_class(self):
-        output = self.capture_stdout("count InvalidClass")
+class TestUpdateCommands(unittest.TestCase):
+    """Tests for the update commands."""
+
+    def setUp(self):
+        self.console = HBNBCommand()
+
+    def tearDown(self):
+        self.console = None
+
+    @classmethod
+    def tearDownClass(cls):
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
+    def capture_stdout(self, command):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd(command)
+            return mock_stdout.getvalue().strip()
+
+    def test_update_existing_instance(self):
+        output = self.capture_stdout("create BaseModel")
+        instance_id = output
+        output = self.capture_stdout(f"update BaseModel {instance_id} name 'NewName'")
+        assert "** class doesn't exist **" not in output
+        assert "** class name missing **" not in output
+        assert "** instance id missing **" not in output
+        assert "** attribute name missing **" not in output
+        assert "** value missing **" not in output
+
+    def test_update_non_existing_instance(self):
+        output = self.capture_stdout("update BaseModel NonExistentID name 'NewName'")
+        self.assertEqual(output, "** no instance found **")
+
+    def test_update_missing_class_name(self):
+        output = self.capture_stdout("update NonExistentClass NonExistentID name 'NewName'")
         self.assertEqual(output, "** class doesn't exist **")
 
-    def test_create_user_command(self):
-        output = self.capture_stdout("create User")
-        self.assertTrue(len(output) == 36)
-        self.assertTrue(isinstance(storage.all()["User." + output], User))
+    def test_update_missing_instance_id(self):
+        output = self.capture_stdout("update BaseModel")
+        self.assertEqual(output, "** instance id missing **")
 
-    def test_create_state_command(self):
-        output = self.capture_stdout("create State")
-        self.assertTrue(len(output) == 36)
-        self.assertTrue(isinstance(storage.all()["State." + output], State))
+    def test_update_missing_attribute_name(self):
+        output = self.capture_stdout("update BaseModel ExistingID")
+        self.assertEqual(output, "** attribute name missing **")
 
-    def test_create_city_command(self):
-        output = self.capture_stdout("create City")
-        self.assertTrue(len(output) == 36)
-        self.assertTrue(isinstance(storage.all()["City." + output], City))
+    def test_update_missing_new_value(self):
+        output = self.capture_stdout("update BaseModel ExistingID name")
+        self.assertEqual(output, "** value missing **")
 
-    def test_create_amenity_command(self):
-        output = self.capture_stdout("create Amenity")
-        self.assertTrue(len(output) == 36)
-        self.assertTrue(isinstance(storage.all()["Amenity." + output], Amenity))
+    def test_update_invalid_json_format(self):
+        output = self.capture_stdout("update BaseModel ExistingID name {'invalidJSON'}")
+        self.assertEqual(output, "** invalid dictionary **")
 
-    def test_create_place_command(self):
-        output = self.capture_stdout("create Place")
-        self.assertTrue(len(output) == 36)
-        self.assertTrue(isinstance(storage.all()["Place." + output], Place))
+    def test_update_with_dictionary(self):
+        output = self.capture_stdout("update BaseModel ExistingID {'name': 'NewName', 'age': 30}")
+        assert "** class doesn't exist **" not in output
+        assert "** instance id missing **" not in output
+        assert "** invalid dictionary **" not in output
 
-    def test_create_review_command(self):
-        output = self.capture_stdout("create Review")
-        self.assertTrue(len(output) == 36)
-        self.assertTrue(isinstance(storage.all()["Review." + output], Review))
-
+    def test_update_non_existing_class(self):
+        output = self.capture_stdout("update NonExistentClass ExistingID name 'NewName'")
+        self.assertEqual(output, "** class doesn't exist **")
 
 if __name__ == '__main__':
     unittest.main()

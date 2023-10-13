@@ -19,7 +19,7 @@ class HBNBCommand(cmd.Cmd):
     """
     HBNBCommand class for the command interpreter.
     """
-    
+
     prompt = "(hbnb) "
 
     def emptyline(self):
@@ -34,7 +34,7 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def do_create(self, args):
-        """Create a new instance of BaseModel"""
+        """Create a new instance of a class"""
         if not args:
             print("** class name missing **")
             return
@@ -65,6 +65,7 @@ class HBNBCommand(cmd.Cmd):
         except NameError:
             print("** class doesn't exist **")
 
+    def do_destroy(self, args):
         """Deletes an instance based on ID"""
         args_list = shlex.split(args)
         if not args:
@@ -84,7 +85,7 @@ class HBNBCommand(cmd.Cmd):
                 storage.save()
         except NameError:
             print("** class doesn't exist **")
-            
+
     def do_all(self, args):
         """Prints all string representation of all instances"""
         args_list = shlex.split(args)
@@ -101,7 +102,7 @@ class HBNBCommand(cmd.Cmd):
         print(obj_list)
 
     def do_update(self, args):
-        """Updates an instance based on ID and attribute name/value or dictionary"""
+        """Updates an instance based on ID and attribute name/value or dict"""
         args_list = shlex.split(args)
         if not args:
             print("** class name missing **")
@@ -167,8 +168,8 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
         try:
-            cls = eval(args_list[0])
-            count = len(cls.all())
+            cls = args_list[0]
+            count = len(storage.all(cls))
             print(count)
         except NameError:
             print("** class doesn't exist **")
