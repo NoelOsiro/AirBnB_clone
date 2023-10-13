@@ -110,5 +110,53 @@ class TestHelpCommands(unittest.TestCase):
         output = self.capture_stdout("help count")
         self.assertEqual(output, "Counts the number of instances of a class")
 
+class TestCreateCommand(unittest.TestCase):
+    def setUp(self):
+        self.console = HBNBCommand()
+
+    def tearDown(self):
+        self.console = None
+
+    @classmethod
+    def tearDownClass(cls):
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
+    def capture_stdout(self, command):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            HBNBCommand().onecmd(command)
+            return mock_stdout.getvalue().strip()
+
+    def test_create_with_valid_class(self):
+        output = self.capture_stdout("create BaseModel")
+        self.assertNotEqual(output, "** class doesn't exist **")
+        self.assertNotEqual(output, "** class name missing **")
+
+    def test_create_with_nonexistent_class(self):
+        output = self.capture_stdout("create NonExistentClass")
+        self.assertEqual(output, "** class doesn't exist **")
+
+    def test_create_without_class_name(self):
+        output = self.capture_stdout("create")
+        self.assertEqual(output, "** class name missing **")
+
+    def test_create_and_check_in_storage(self):
+        output = self.capture_stdout("create BaseModel")
+        self.assertNotEqual(output, "** class doesn't exist **")
+        self.assertNotEqual(output, "** class name missing **")
+        instance_id = output
+        created_instance = storage.all().get(f"BaseModel.{instance_id}")
+        self.assertIsNotNone(created_instance)
+
+    def test_create_and_check_string_representation(self):
+        output = self.capture_stdout("create BaseModel")
+        self.assertNotEqual(output, "** class doesn't exist **")
+        self.assertNotEqual(output, "** class name missing **")
+        instance_id = output
+        created_instance = storage.all().get(f"BaseModel.{instance_id}")
+        self.assertTrue(str(created_instance).startswith("[BaseModel]"))
+
 if __name__ == '__main__':
     unittest.main()
