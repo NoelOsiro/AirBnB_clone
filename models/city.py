@@ -15,4 +15,5 @@ class City(BaseModel):
         """
         Return a dictionary with all instances of a class.
         """
+        from models import storage
         return storage.all(cls)
