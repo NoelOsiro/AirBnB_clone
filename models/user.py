@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Defines the User class."""
+
 from models.base_model import BaseModel
 
 
@@ -29,4 +30,5 @@ class User(BaseModel):
         """
         Return a dictionary with all instances of a class.
         """
+        from models import storage
         return storage.all(cls)
