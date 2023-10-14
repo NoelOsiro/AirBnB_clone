@@ -67,7 +67,8 @@ class TestBaseModel(unittest.TestCase):
         """
         Test the str method of BaseModel.
         """
-        expected_str = "[BaseModel] ({}) {}".format(self.model.id, self.model.__dict__)
+        expected_str = "[BaseModel] ({}) {}".format(
+            self.model.id, self.model.__dict__)
         self.assertEqual(str(self.model), expected_str)
 
     def test_new_instance_added_to_storage(self):

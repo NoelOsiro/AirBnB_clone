@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+"""Defines the FileStorage class."""
 import json
 
 
@@ -50,7 +52,8 @@ class FileStorage:
                     raise NameError(f"Class '{cls}' doesn't exist.")
                 cls = class_mapping[cls]
 
-            return {key: obj for key, obj in self.__objects.items() if isinstance(obj, cls)}
+            return {key: obj for key,
+                    obj in self.__objects.items() if isinstance(obj, cls)}
         return self.__objects
 
     def new(self, obj):
