@@ -135,7 +135,6 @@ class HBNBCommand(cmd.Cmd):
         except NameError:
             print("** class doesn't exist **")
 
-
     def do_update_dict(self, args):
         """Updates an instance based on ID with a dictionary representation"""
         args_list = shlex.split(args)
