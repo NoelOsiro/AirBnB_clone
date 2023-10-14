@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """Defines the BaseModel class."""
-
 import uuid
 from datetime import datetime
 from models import storage
