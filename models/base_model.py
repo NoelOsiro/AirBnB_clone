@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Defines the BaseModel class."""
+
 import uuid
 from datetime import datetime
 from models import storage
@@ -64,21 +65,6 @@ class BaseModel:
             dict: A dictionary containing all
             instance attributes and their values.
         """
-        instance_dict = self.__dict__.copy()
-        instance_dict["__class__"] = self.__class__.__name__
-        instance_dict["created_at"] = self.created_at.isoformat()
-        instance_dict["updated_at"] = self.updated_at.isoformat()
-        return instance_dict
-
-    def __str__(self) -> str:
-        """
-        Return a string representation of the instance.
-
-        Returns:
-            str: A string in the format
-            '[<class name>] (<self.id>) <self.__dict__>'.
-        """
-        return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
         instance_dict = self.__dict__.copy()
         instance_dict["__class__"] = self.__class__.__name__
         instance_dict["created_at"] = self.created_at.isoformat()
