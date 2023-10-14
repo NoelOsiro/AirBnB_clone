@@ -3,7 +3,6 @@
 
 import uuid
 from datetime import datetime
-from models import storage
 
 
 class BaseModel:
@@ -28,6 +27,8 @@ class BaseModel:
             created_at : Date and time the instance was created.
             updated_at : Date and time the instance was last updated.
         """
+        from models import storage
+
         if kwargs:
             for key, value in kwargs.items():
                 if key in ["created_at", "updated_at"]:
@@ -46,6 +47,7 @@ class BaseModel:
         """
         Return a dictionary with all instances of a class.
         """
+        from models import storage
         return storage.all(cls)
 
     def save(self):
@@ -53,6 +55,7 @@ class BaseModel:
         Update the 'updated_at' attribute with
         the current datetime and save the instance to storage.
         """
+        from models import storage
         self.updated_at = datetime.now()
         storage.save()
 
