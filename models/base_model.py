@@ -6,11 +6,7 @@ from datetime import datetime
 
 
 class BaseModel:
-    """
-    This module defines the BaseModel class,
-    which serves as the base class for all
-    models in the application.
-    """
+    """This module defines the BaseModel class."""
 
     def __init__(self, *args, **kwargs):
         """
