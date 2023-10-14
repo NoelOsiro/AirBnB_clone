@@ -44,6 +44,8 @@ class HBNBCommand(cmd.Cmd):
             print(new_instance.id)
         except NameError:
             print("** class doesn't exist **")
+        except SyntaxError:
+            print("** invalid dictionary **")
 
     def do_show(self, args):
         """Prints the string representation of an instance based on ID"""
@@ -124,11 +126,15 @@ class HBNBCommand(cmd.Cmd):
                 print("** value missing **")
                 return
             attr_name = args_list[2]
-            attr_value = args_list[3].strip('"')
-            setattr(obj, attr_name, attr_value)
-            storage.save()
+            try:
+                attr_value = json.loads(args_list[3])
+                setattr(obj, attr_name, attr_value)
+                storage.save()
+            except json.JSONDecodeError:
+                print("** invalid dictionary **")
         except NameError:
             print("** class doesn't exist **")
+
 
     def do_update_dict(self, args):
         """Updates an instance based on ID with a dictionary representation"""

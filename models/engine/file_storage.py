@@ -5,8 +5,9 @@ class FileStorage:
     """
     Handles serialization and deserialization of objects to/from a JSON file.
     """
-    __file_path = "file.json"
-    __objects = {}
+    def __init__(self):
+        self.__file_path = "file.json"
+        self.__objects = {}
 
     def classes(self):
         """
@@ -35,21 +36,27 @@ class FileStorage:
     def all(self, cls=None):
         """
         Return a dictionary of objects.
+
+        Args:
+            cls (class, str): Class name or class object to filter the objects.
+
+        Returns:
+            dict: Dictionary of objects.
         """
-        if cls is not None:
-            if type(cls) == str:
-                cls = models.classes.get(cls, None)
-            if cls is not None:
-                return {
-                    key: obj
-                    for key, obj in self.__objects.items()
-                    if isinstance(obj, cls)
-                }
+        if cls:
+            if isinstance(cls, str):
+                class_mapping = self.classes()
+                if cls not in class_mapping:
+                    raise NameError(f"Class '{cls}' doesn't exist.")
+                cls = class_mapping[cls]
+
+            return {key: obj for key, obj in self.__objects.items() if isinstance(obj, cls)}
         return self.__objects
 
     def new(self, obj):
         """
         Adds an object to the dictionary (__objects).
+
         Args:
             obj: The object to be added.
         """
@@ -76,7 +83,8 @@ class FileStorage:
                 serialized_objects = json.load(file)
                 for key, obj_dict in serialized_objects.items():
                     class_name, obj_id = key.split('.')
-                    cls = eval(class_name)
-                    self.__objects[key] = cls(**obj_dict)
+                    cls = self.classes().get(class_name)
+                    if cls:
+                        self.__objects[key] = cls(**obj_dict)
         except FileNotFoundError:
             pass

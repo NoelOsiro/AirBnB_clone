@@ -5,6 +5,12 @@ class Place(BaseModel):
     """
     Place class that inherits from BaseModel.
     """
+    @classmethod
+    def all(cls):
+        """
+        Return a dictionary with all instances of a class.
+        """
+        return storage.all(cls)
     city_id = ""
     user_id = ""
     name = ""
