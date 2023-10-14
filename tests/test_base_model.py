@@ -1,22 +1,27 @@
 import unittest
 from models.base_model import BaseModel
-from models import storage
 from datetime import datetime
+from models import storage
 
 
 class TestBaseModel(unittest.TestCase):
+
+    def setUp(self):
+        self.model = BaseModel()
+
+    def tearDown(self):
+        del self.model
 
     def test_new_instance(self):
         """
         Test creating a new instance of BaseModel.
         """
-        model = BaseModel()
-        self.assertIsInstance(model, BaseModel)
-        self.assertTrue(hasattr(model, 'id'))
-        self.assertTrue(hasattr(model, 'created_at'))
-        self.assertTrue(hasattr(model, 'updated_at'))
-        self.assertEqual(model.created_at, model.updated_at)
-        self.assertIsInstance(model.created_at, datetime)
+        self.assertIsInstance(self.model, BaseModel)
+        self.assertTrue(hasattr(self.model, 'id'))
+        self.assertTrue(hasattr(self.model, 'created_at'))
+        self.assertTrue(hasattr(self.model, 'updated_at'))
+        self.assertEqual(self.model.created_at, self.model.updated_at)
+        self.assertIsInstance(self.model.created_at, datetime)
 
     def test_init_with_kwargs(self):
         """
@@ -39,44 +44,68 @@ class TestBaseModel(unittest.TestCase):
         """
         Test the save method of BaseModel.
         """
-        model = BaseModel()
-        prev_updated_at = model.updated_at
-        model.save()
-        self.assertNotEqual(prev_updated_at, model.updated_at)
+        prev_updated_at = self.model.updated_at
+        self.model.save()
+        self.assertNotEqual(prev_updated_at, self.model.updated_at)
 
     def test_to_dict_method(self):
         """
         Test the to_dict method of BaseModel.
         """
-        model = BaseModel()
-        model_dict = model.to_dict()
+        model_dict = self.model.to_dict()
         self.assertEqual(model_dict['__class__'], 'BaseModel')
         self.assertEqual(
             model_dict['created_at'],
-            model.created_at.isoformat()
+            self.model.created_at.isoformat()
             )
         self.assertEqual(
             model_dict['updated_at'],
-            model.updated_at.isoformat()
+            self.model.updated_at.isoformat()
             )
 
     def test_str_method(self):
         """
         Test the str method of BaseModel.
         """
-        model = BaseModel()
-        expected_str = "[BaseModel] ({}) {}".format(model.id, model.__dict__)
-        self.assertEqual(str(model), expected_str)
+        expected_str = "[BaseModel] ({}) {}".format(self.model.id, self.model.__dict__)
+        self.assertEqual(str(self.model), expected_str)
 
     def test_new_instance_added_to_storage(self):
         """
         Test that a new instance is added to storage.
         """
-        model = BaseModel()
         all_objs = storage.all()
-        key = "{}.{}".format(model.__class__.__name__, model.id)
+        key = "{}.{}".format(self.model.__class__.__name__, self.model.id)
         self.assertIn(key, all_objs)
-        self.assertEqual(all_objs[key], model)
+        self.assertEqual(all_objs[key], self.model)
+
+    def test_id_type(self):
+        """
+        Test the type of the 'id' attribute.
+        """
+        self.assertIsInstance(self.model.id, str)
+
+    def test_created_updated_at_type(self):
+        """
+        Test the types of the 'created_at' and 'updated_at' attributes.
+        """
+        self.assertIsInstance(self.model.created_at, datetime)
+        self.assertIsInstance(self.model.updated_at, datetime)
+
+    def test_updated_at_after_save(self):
+        """
+        Test that 'updated_at' changes after calling save().
+        """
+        prev_updated_at = self.model.updated_at
+        self.model.save()
+        self.assertNotEqual(prev_updated_at, self.model.updated_at)
+
+    def test_to_dict_returns_dict(self):
+        """
+        Test that to_dict() returns a dictionary.
+        """
+        model_dict = self.model.to_dict()
+        self.assertIsInstance(model_dict, dict)
 
 
 if __name__ == '__main__':
