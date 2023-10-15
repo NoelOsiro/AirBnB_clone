@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Defines the BaseModel class."""
+"""Initialize the file storage class."""
 from models.engine.file_storage import FileStorage
 
 storage = FileStorage()
