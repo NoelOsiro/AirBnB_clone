@@ -8,6 +8,9 @@ class FileStorage:
     Handles serialization and deserialization of objects to/from a JSON file.
     """
     def __init__(self):
+        """
+        Initialize a new instance of FileStorage.
+        """
         self.__file_path = "file.json"
         self.__objects = {}
 
