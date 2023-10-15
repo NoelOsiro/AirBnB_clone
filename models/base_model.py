@@ -36,12 +36,18 @@ class BaseModel:
             self.created_at = self.updated_at = datetime.now()
             storage.new(self)
 
+    @classmethod
+    def all(cls):
+        """
+        Return a dictionary with all instances of a class.
+        """
+        return storage.all(cls)
+
     def save(self):
         """
         Update the 'updated_at' attribute with
         the current datetime and save the instance to storage.
         """
-        from models import storage
         self.updated_at = datetime.now()
         storage.save()
 
@@ -68,5 +74,6 @@ class BaseModel:
             str: A string in the format
             '[<class name>] (<self.id>) <self.__dict__>'.
         """
-        cln = self.__class__.__name__
-        return "[{}] ({}) {}".format(cln,self.id, self.__dict__)
+        return "[{}] ({}) {}".format(
+            self.__class__.__name__,
+            self.id, self.__dict__)
