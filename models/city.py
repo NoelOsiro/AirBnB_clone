@@ -7,13 +7,6 @@ class City(BaseModel):
     """
     City class that inherits from BaseModel.
     """
+    
     state_id = ""
     name = ""
-
-    @classmethod
-    def all(cls):
-        """
-        Return a dictionary with all instances of a class.
-        """
-        from models import storage
-        return storage.all(cls)
