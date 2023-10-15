@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """Defines the BaseModel class."""
-
 import uuid
 from datetime import datetime
+from models import storage
 
 
 class BaseModel:
@@ -23,8 +23,6 @@ class BaseModel:
             created_at : Date and time the instance was created.
             updated_at : Date and time the instance was last updated.
         """
-        from models import storage
-
         if kwargs:
             for key, value in kwargs.items():
                 if key in ["created_at", "updated_at"]:
@@ -37,14 +35,6 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = self.updated_at = datetime.now()
             storage.new(self)
-
-    @classmethod
-    def all(cls):
-        """
-        Return a dictionary with all instances of a class.
-        """
-        from models import storage
-        return storage.all(cls)
 
     def save(self):
         """
@@ -78,6 +68,5 @@ class BaseModel:
             str: A string in the format
             '[<class name>] (<self.id>) <self.__dict__>'.
         """
-        return "[{}] ({}) {}".format(
-            self.__class__.__name__,
-            self.id, self.__dict__)
+        cln = self.__class__.__name__
+        return "[{}] ({}) {}".format(cln,self.id, self.__dict__)

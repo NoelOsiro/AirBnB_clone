@@ -7,7 +7,8 @@ from models import storage
 
 
 class TestBaseModel(unittest.TestCase):
-
+    """Test creating a new instance of BaseModel.
+    """
     def setUp(self):
         self.model = BaseModel()
 
