@@ -7,7 +7,7 @@ class Place(BaseModel):
     """
     Place class that inherits from BaseModel.
     """
-    
+
     city_id = ""
     user_id = ""
     name = ""
