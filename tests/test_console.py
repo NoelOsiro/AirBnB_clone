@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Defines unittests for console.py."""
+
 import unittest
 import os
 import uuid
